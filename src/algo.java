@@ -1,7 +1,8 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import java.util.Scanner; 
+import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 import java.util.Random;
 import java.util.ArrayList;
 
@@ -24,7 +25,14 @@ implements MouseListener, MouseMotionListener
 	static int orig;
 	static int origy;
 	
-	public void paintComponent(Graphics g) {
+	
+	public void timeDelay(long t) {
+	    try {
+	        Thread.sleep(t);
+	    } catch (InterruptedException e) {}
+	}
+	
+	public void paintComponent(Graphics g)  {
 		super.paintComponent(g);
 		this.setBackground(Color.WHITE);
 		
@@ -56,6 +64,7 @@ implements MouseListener, MouseMotionListener
 		
 		if(placed) {
 			
+			
 			mindis = 1000000000;
 			
 			//neighbors.add(startx);
@@ -69,8 +78,12 @@ implements MouseListener, MouseMotionListener
 				}
 			}
 //			
+			g.setColor(Color.CYAN);
+			g.setFont(new Font("TimesRoman", Font.PLAIN, 60)); 
+			g.drawString("Solving...", map.length * 20 / 2, map.length * 20 / 2 );
 			System.out.println("Startx: " + startx + "  Starty: " + starty);
 			System.out.println("Endx: " + endx + "  Endy: " + endy);
+			
 			marked[startx][starty] = true;
 			while((startx != endx) && (starty != endy)) {
 				
@@ -105,10 +118,12 @@ implements MouseListener, MouseMotionListener
 				
 				
 				//now you must label the shortest nodes into variables 
+				g.setFont(new Font("TimesRoman", Font.PLAIN, 60)); 
+				g.drawString("Solved!!!!  :D", map.length * 50 / 2, map.length * 50 / 2 );
+				
+				timeDelay(100);
 				
 				g.setColor(Color.ORANGE);
-				g.setFont(new Font("TimesRoman", Font.PLAIN, 60)); 
-				g.drawString("Solving...", map.length * 60 / 2, map.length * 60 / 2 );
 				g.setColor(new Color(148, 0, 211));
 				g.fillRect(minx*60, miny  * 60, 60, 60);
 				startx = minx;
