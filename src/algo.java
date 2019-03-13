@@ -1,3 +1,19 @@
+//Christopher Chu Github: wanderingessence
+//Date: 3/12/2018 
+//Duration: 3 days to complete.
+
+//This algorithm implementation partially solves the A* Problem with Flaws
+
+//The algorithm is given by a "robot", denoted by a red square and a "destination of treasure", denoted
+//by the green square and attempts to find the most efficient way for the robot to find the treasure
+//by using A* with the minimum distance to the goal heuristic. The heuristic is partially effective, but 
+//not 100%, as DFS was not performed in this implementation.
+
+//Algorithm runs in O(n^2) and takes O(n^2) space. O(n^2) to iterate through all the neighbors, label
+//each squares. We also find the path in the O(n^2) array. 
+
+
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -24,6 +40,7 @@ implements MouseListener, MouseMotionListener
 	static int minx, miny;
 	static int orig;
 	static int origy;
+	static int infinitechecker;
 	
 	
 	public void timeDelay(long t) {
@@ -45,26 +62,26 @@ implements MouseListener, MouseMotionListener
 					g.setColor(Color.BLACK);
 				}
 				
-				g.fillRect(i * 60, j * 60, map.length * 60, map[i].length *60);
+				g.fillRect(i * 50, j * 50, map.length * 50, map[i].length *50);
 				
 			}
 		}
 		
 		if(startgood) {
 			g.setColor(Color.RED);
-			g.fillRect(startx*60, starty  * 60, 60, 60);
+			g.fillRect(startx*50, starty  * 50, 50, 50);
 			orig = startx;
 			origy = starty;
 		}
 		
 		if(endgood) {
 			g.setColor(Color.GREEN);
-			g.fillRect(endx * 60, endy  * 60, 60, 60);
+			g.fillRect(endx * 50, endy  * 50, 50, 50);
 		}
 		
 		if(placed) {
 			
-			
+			marked[startx][starty] = true;
 			mindis = 1000000000;
 			
 			//neighbors.add(startx);
@@ -79,37 +96,46 @@ implements MouseListener, MouseMotionListener
 			}
 //			
 			g.setColor(Color.CYAN);
-			g.setFont(new Font("TimesRoman", Font.PLAIN, 60)); 
-			g.drawString("Solving...", map.length * 20 / 2, map.length * 20 / 2 );
+			g.setFont(new Font("TimesRoman", Font.PLAIN, 10)); 
+			g.drawString("Solving...", map.length * 50 / 2, map.length * 50 / 2 );
 			System.out.println("Startx: " + startx + "  Starty: " + starty);
 			System.out.println("Endx: " + endx + "  Endy: " + endy);
 			
-			marked[startx][starty] = true;
+		//	marked[startx][starty] = true;
 			while((startx != endx) && (starty != endy)) {
+				infinitechecker++;
+				if(infinitechecker == 20) {
+					System.out.println("There is no possible path found for this. :(");
+					g.setColor(Color.PINK);
+					g.fillRect(minx * 50, miny  * 50, 50, 50);
+					break;
+				}
 				
 				for(int i = -1; i <= 1; i += 1) {
 					for(int j = -1; j <= 1; j += 1) {
-						if(((i == 0) && (j == 0))) {continue;} 
+						if(((i == 0) && (j == 0)) || (marked[startx][starty])) {continue;} 
 						
 						else if(map[startx + i][starty + j] == 0) {
 							//g.setColor(Color.BLUE);
-							//g.fillRect(startx*60 + 60 * i, starty  * 60 + 60 * j, 60, 60);
+							//g.fillRect(startx*50 + 50 * i, starty  * 50 + 50 * j, 50, 50);
 							g.setColor(Color.YELLOW);
 							g.setFont(new Font("TimesRoman", Font.PLAIN, 10)); 
-							double startdis = Math.round(computeDistance(startx, starty, startx + i, starty + j) * 100.0)/100.0;
-							double enddis = Math.round(computeDistance(startx + i, starty + j, endx, endy) * 100.0)/100.0;
-							double distance = Math.round((startdis + enddis )*100.0)/100.0;
+							double startdis = Math.round(computeDistance(startx, starty, startx + i, starty + j) * 500.0)/500.0;
+							double enddis = Math.round(computeDistance(startx + i, starty + j, endx, endy) * 500.0)/500.0;
+							double distance = Math.round((startdis + enddis )*500.0)/500.0;
 							if(i == 0 && j == 0) {
 								distance = 1000000000;
 							}
 							String distancetoString = distance + "";
-							g.drawString(distancetoString, startx*60 + 60 * i + 25, starty  * 60 + 60 * j + 35);
-							if(distance < mindis ) {
+							//g.drawString(distancetoString, startx*50 + 50 * i + 250, starty  * 50 + 50 * j + 350);
+							if(distance <= mindis ) {
 								mindis = distance;
 								minx = startx + i;
 								miny = starty + j;
 						
 							}
+							
+							//else set mindis to the minimum of the neighbors
 						} else {}
 							
 					}
@@ -118,27 +144,27 @@ implements MouseListener, MouseMotionListener
 				
 				
 				//now you must label the shortest nodes into variables 
-				g.setFont(new Font("TimesRoman", Font.PLAIN, 60)); 
-				g.drawString("Solved!!!!  :D", map.length * 50 / 2, map.length * 50 / 2 );
+				g.setFont(new Font("TimesRoman", Font.PLAIN, 20)); 
+				g.drawString("Solved!!!!  :D", map.length * 500 / 2, map.length * 500 / 2 );
 				
-				timeDelay(100);
+				//timeDelay(500);
 				
 				g.setColor(Color.ORANGE);
 				g.setColor(new Color(148, 0, 211));
-				g.fillRect(minx*60, miny  * 60, 60, 60);
+				g.fillRect(minx*50, miny  * 50, 50, 50);
 				startx = minx;
 				starty = miny;
-				marked[startx][starty] = true;
+				//marked[startx][starty] = true;
 				System.out.println(mindis);
 				System.out.println("minx: " + minx + " miny: " + miny);
 								
 			}
 			
 			g.setColor(Color.RED);
-			g.fillRect(orig * 60, origy  * 60, 60, 60);
+			g.fillRect(orig * 50, origy  * 50, 50, 50);
 			
 			g.setColor(Color.GREEN);
-			g.fillRect(endx * 60, endy  * 60, 60, 60);
+			g.fillRect(endx * 50, endy  * 50, 50, 50);
 			
 		}
 		
@@ -170,7 +196,7 @@ implements MouseListener, MouseMotionListener
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		algo star = new algo();
 		f.add(star);
-		f.setSize(length * 60, width * 60);
+		f.setSize(length * 50, width * 50);
 		f.setVisible(true);
 		
 		System.out.println("Left Click To specify the Start Node, Right Click to Specify the End Node.");
@@ -196,16 +222,16 @@ implements MouseListener, MouseMotionListener
 		
 		if (SwingUtilities.isLeftMouseButton(e)) {
 			startgood = true;
-			startx = e.getX()/60;
-			starty = e.getY()/60;
+			startx = e.getX()/50;
+			starty = e.getY()/50;
 			placed = startgood && endgood;
 			repaint();
 		}
 		
 		if (SwingUtilities.isRightMouseButton(e)) {
 			endgood = true;
-			endx = e.getX()/60;
-			endy = e.getY()/60;
+			endx = e.getX()/50;
+			endy = e.getY()/50;
 			placed = startgood && endgood;
 			repaint();
 		}
